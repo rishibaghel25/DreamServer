@@ -127,6 +127,26 @@ if (Test-Path $_dreamSrc) {
 
 # ── Generate .env with secure secrets ────────────────────────────────────────
 $_dreamMode = $(if ($cloudMode) { "cloud" } else { "local" })
+$_amdInferenceRuntime = ""
+$_amdInferenceBackend = ""
+$_amdInferenceLocation = ""
+$_amdInferencePort = ""
+$_amdInferenceSupportedBackends = ""
+$_amdInferenceRuntimeMode = ""
+$_amdInferenceManaged = ""
+$_lemonadeServerImage = ""
+if ($gpuInfo.Backend -eq "amd" -and -not $cloudMode) {
+    $_amdInferenceRuntime = "lemonade"
+    $_amdInferenceBackend = $(if ($amdLemonadeRuntime -and $amdLemonadeRuntime.windows_backend) { $amdLemonadeRuntime.windows_backend } else { "vulkan" })
+    $_amdInferenceLocation = "host"
+    $_amdInferencePort = $(if ($amdLemonadeRuntime -and $amdLemonadeRuntime.api_port) { [string]$amdLemonadeRuntime.api_port } else { "8080" })
+    $_amdInferenceSupportedBackends = $_amdInferenceBackend
+    $_amdInferenceRuntimeMode = "windows-legacy-lemonade"
+    $_amdInferenceManaged = "true"
+}
+if ($amdLemonadeRuntime -and $amdLemonadeRuntime.container_image) {
+    $_lemonadeServerImage = $amdLemonadeRuntime.container_image
+}
 $envResult = New-DreamEnv `
     -InstallDir     $installDir `
     -TierConfig     $tierConfig `
@@ -134,6 +154,14 @@ $envResult = New-DreamEnv `
     -GpuBackend     $gpuInfo.Backend `
     -DreamMode      $_dreamMode `
     -LlamaServerImage $llamaServerImage `
+    -AmdInferenceRuntime $_amdInferenceRuntime `
+    -AmdInferenceBackend $_amdInferenceBackend `
+    -AmdInferenceLocation $_amdInferenceLocation `
+    -AmdInferencePort $_amdInferencePort `
+    -AmdInferenceSupportedBackends $_amdInferenceSupportedBackends `
+    -AmdInferenceRuntimeMode $_amdInferenceRuntimeMode `
+    -AmdInferenceManaged $_amdInferenceManaged `
+    -LemonadeServerImage $_lemonadeServerImage `
     -SystemRamGB    $systemRamGB `
     -EnableLangfuse $enableLangfuse `
     -EnableLan      $lanFlag
