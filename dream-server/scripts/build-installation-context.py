@@ -292,6 +292,8 @@ def build_context_block(env_path: Path) -> str:
         "",
         "Dream Server has an **extensions system** — services bundled with the stack that the operator can enable/disable from the dashboard's Extensions page without reinstalling. The list below is what's currently running. Some are tools you can call directly through your own tool-calling layer; others are surfaces you can point the operator at.",
         "",
+        "**When asked verbally about this list, summarize it conversationally — don't recite the bullets.** A good answer is one or two sentences that names a few of the most relevant services for the question, not the whole catalog. Example: *\"Web search through SearXNG, image generation in ComfyUI, voice via Kokoro and Whisper, plus workflows in n8n — and there's more on the dashboard.\"* The bullets below are your reference; speak them as natural sentences.",
+        "",
     ]
     if bullets:
         lines.extend(bullets)
